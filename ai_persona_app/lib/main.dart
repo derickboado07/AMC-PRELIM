@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,12 +14,26 @@ class MyApp extends StatelessWidget {
       title: 'AI Persona App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.teal,
-        scaffoldBackgroundColor: Colors.grey[50],
+        primaryColor: Colors.blue,
+        primaryColorLight: Colors.blue[200],
+        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
         cardColor: Colors.white,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.teal,
+          backgroundColor: Colors.blue,
           foregroundColor: Colors.white,
+          elevation: 2.0,
+        ),
+        textTheme: GoogleFonts.interTextTheme().copyWith(
+          headlineSmall: GoogleFonts.poppins(
+            fontSize: 20.0,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+          bodyMedium: GoogleFonts.inter(
+            fontSize: 16.0,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.25,
+          ),
         ),
       ),
       home: const HomePage(),
@@ -72,7 +87,12 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Select Your AI Persona')),
+      appBar: AppBar(
+        title: Text(
+          'Select Your AI Persona',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: GridView.builder(
@@ -95,22 +115,18 @@ class HomePage extends StatelessWidget {
                 );
               },
               child: Card(
-                elevation: 4.0,
+                elevation: 2.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18.0),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      persona.icon,
-                      size: 48.0,
-                      color: Theme.of(context).primaryColor,
-                    ),
+                    Icon(persona.icon, size: 48.0, color: Colors.blue[700]),
                     const SizedBox(height: 8.0),
                     Text(
                       persona.name,
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium,
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -132,11 +148,16 @@ class PersonaPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(persona.name)),
+      appBar: AppBar(
+        title: Text(
+          persona.name,
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+      ),
       body: Center(
         child: Text(
           'This persona will answer questions related to ${persona.expertise}.',
-          style: const TextStyle(fontSize: 18.0),
+          style: Theme.of(context).textTheme.bodyMedium,
           textAlign: TextAlign.center,
         ),
       ),
