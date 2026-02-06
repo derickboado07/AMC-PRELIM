@@ -106,9 +106,9 @@ class HomePage extends StatelessWidget {
           itemCount: personas.length,
           itemBuilder: (context, index) {
             final persona = personas[index];
-            return InkWell(
+                return InkWell(
               onTap: () {
-                if (persona.name == 'Financial Advisor' || persona.name == 'Relationship Expert' || persona.name == 'Wellness Coach') {
+                if (persona.name == 'Financial Advisor' || persona.name == 'Relationship Expert' || persona.name == 'Wellness Coach' || persona.name == 'McArthur Bible Commentary') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => ChatScreen(persona: persona)),
