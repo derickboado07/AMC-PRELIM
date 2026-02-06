@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'screens/chat_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -107,12 +108,19 @@ class HomePage extends StatelessWidget {
             final persona = personas[index];
             return InkWell(
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => PersonaPage(persona: persona),
-                  ),
-                );
+                if (persona.name == 'Financial Advisor') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ChatScreen()),
+                  );
+                } else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PersonaPage(persona: persona),
+                    ),
+                  );
+                }
               },
               child: Card(
                 elevation: 2.0,
