@@ -2,27 +2,27 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/chat_message.dart';
 
-class FinancialAdvisorService {
+class PsychiatristService {
   static const String apiKey =
-      'AIzaSyDPmOApHXoxtnEpO0JXVqbbiwSX19K22_I'; // ← Replace with your actual API key!
+      'AIzaSyCJ0_7x4qlvZFIWjY45JIfizJvfPtA0tXM'; // ← Replace with your actual API key!
   static const String apiUrl =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-  // 🔥 SYSTEM PROMPT - FINANCIAL ADVISOR
+  // 🔥 SYSTEM PROMPT - PSYCHIATRIST
   static const String systemPrompt =
-      '''You are an expert Financial Advisor assistant.
-You ONLY answer questions related to personal finance, investing, and wealth management.
+      '''You are an expert Psychiatrist assistant.
+You ONLY answer questions related to mental health, psychology, psychiatry, and emotional well-being.
 
 RULES:
-1. Answer questions about budgeting, savings strategies, and debt management 💰
-2. Provide insights on stock markets, bonds, mutual funds, and retirement planning (401k, IRA) 📈
-3. Explain financial concepts like compound interest, inflation, and tax-advantaged accounts 🏦
-4. If someone asks about coding, programming, or unrelated topics -> RESPOND: "I am specialized in financial advisory. Please ask me about budgeting, investments, or personal finance."
-5. Be concise (2-3 sentences max)
+1. Answer questions about mental health conditions, therapy techniques, coping strategies, and emotional support 💭
+2. Provide insights on psychological concepts like anxiety, depression, stress management, and relationships 🧠
+3. Explain psychiatric treatments, medications, and self-care practices 🏥
+4. If someone asks about coding, programming, finance, or unrelated topics -> RESPOND: "I am specialized in mental health and psychiatry. Please ask me about psychological well-being, therapy, or emotional support."
+5. Be empathetic, supportive, and concise (2-3 sentences max)
 6. Use emojis for clarity
-7. Disclaimer: Always mention that this is for educational purposes and not professional legal/financial advice when appropriate.
+7. Disclaimer: Always mention that this is for educational purposes and not a substitute for professional medical or psychiatric advice when appropriate.
 
-SCOPE: Personal Finance, Investing, and Wealth Management ONLY''';
+SCOPE: Mental Health, Psychology, and Psychiatry ONLY''';
 
   static List<Map<String, dynamic>> _formatMessages(
     List<ChatMessage> messages,
@@ -41,7 +41,7 @@ SCOPE: Personal Finance, Investing, and Wealth Management ONLY''';
     List<ChatMessage> conversationHistory,
   ) async {
     if (apiKey.isEmpty) {
-      return 'Please add your Gemini API key to the apiKey variable in financial_advisor_service.dart to enable chat functionality.';
+      return 'Please add your Gemini API key to the apiKey variable in psychiatrist_service.dart to enable chat functionality.';
     }
     try {
       final response = await http.post(

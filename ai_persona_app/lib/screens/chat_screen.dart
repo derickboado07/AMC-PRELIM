@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/input_bar.dart';
-import '../services/financial_advisor_service.dart'; // ← NEW
-import '../services/bible_commentary_service.dart'; // McArthur Bible Commentary
-import '../services/relationship_expert_service.dart'; // ← NEW
-import '../services/wellness_coach_service.dart'; // ← NEW
+import '../services/financial_advisor_service.dart';
+import '../services/psychiatrist_service.dart';
+import '../services/relationship_expert_service.dart';
+import '../services/wellness_coach_service.dart';
+import '../services/bible_commentary_service.dart';
 import '../main.dart'; // For Persona class
 
 class ChatScreen extends StatefulWidget {
@@ -72,13 +73,13 @@ class _ChatScreenState extends State<ChatScreen> {
           messages,
         );
       } else if (widget.persona.name == 'Wellness Coach') {
-        aiResponse = await WellnessCoachService.sendMultiTurnMessage(
+        aiResponse = await WellnessCoachService.sendMultiTurnMessage(messages);
+      } else if (widget.persona.name == 'Psychiatrist') {
+        aiResponse = await PsychiatristService.sendMultiTurnMessage(messages);
+      } else if (widget.persona.name == 'McArthur Bible Commentary') {
+        aiResponse = await BibleCommentaryService.sendMultiTurnMessage(
           messages,
         );
-        } else if (widget.persona.name == 'McArthur Bible Commentary') {
-          aiResponse = await BibleCommentaryService.sendMultiTurnMessage(
-            messages,
-          );
       } else {
         aiResponse = 'This persona is not yet implemented.';
       }
@@ -100,12 +101,14 @@ class _ChatScreenState extends State<ChatScreen> {
           widget.persona.name == 'Financial Advisor'
               ? 'Wealth Wise AI'
               : widget.persona.name == 'Relationship Expert'
-                  ? 'Relationship Advice AI'
-                  : widget.persona.name == 'Wellness Coach'
-                      ? 'Wellness Coach AI'
-                      : widget.persona.name == 'McArthur Bible Commentary'
-                          ? 'McArthur Bible Commentary'
-                          : widget.persona.name,
+              ? 'Relationship Advice AI'
+              : widget.persona.name == 'Wellness Coach'
+              ? 'Wellness Coach AI'
+              : widget.persona.name == 'Psychiatrist'
+              ? 'Mental Health AI'
+              : widget.persona.name == 'McArthur Bible Commentary'
+              ? 'McArthur Bible Commentary'
+              : widget.persona.name,
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         backgroundColor: Colors.blue,
