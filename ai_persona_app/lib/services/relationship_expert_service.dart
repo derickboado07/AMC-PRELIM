@@ -4,7 +4,7 @@ import '../models/chat_message.dart';
 
 class RelationshipExpertService {
   static const String apiKey =
-      'AIzaSyBaln9tetSB_-7GC9esFuJOdkc3h-zydH4'; // ← Replace with your actual API key!
+      'AIzaSyDXS81mGf2UZo8Qj6TkWxM34IQp0pjLhdU'; // ← Replace with your actual API key!
   static const String apiUrl =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
