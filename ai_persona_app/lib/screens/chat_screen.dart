@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/chat_message.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/input_bar.dart';
-import '../services/gemini_service.dart'; // ← NEW
+import '../services/financial_advisor_service.dart'; // ← NEW
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -56,7 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     try {
       // 🔥 SEND ENTIRE HISTORY TO GEMINI
-      final aiResponse = await GeminiService.sendMultiTurnMessage(
+      final aiResponse = await FinancialAdvisorService.sendMultiTurnMessage(
         messages, // ← Entire conversation!
       );
 

@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/chat_message.dart';
 
-class GeminiService {
+class FinancialAdvisorService {
   static const String apiKey =
       'AIzaSyBij1DXaorjs8jJsa0X6Bra2CRO19w5iLI'; // ← Replace with your actual API key!
   static const String apiUrl =
@@ -41,7 +41,7 @@ SCOPE: Personal Finance, Investing, and Wealth Management ONLY''';
     List<ChatMessage> conversationHistory,
   ) async {
     if (apiKey.isEmpty) {
-      return 'Please add your Gemini API key to the apiKey variable in gemini_service.dart to enable chat functionality.';
+      return 'Please add your Gemini API key to the apiKey variable in financial_advisor_service.dart to enable chat functionality.';
     }
     try {
       final response = await http.post(
