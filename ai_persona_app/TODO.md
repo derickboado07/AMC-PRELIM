@@ -1,0 +1,3 @@
+- [x] Create relationship_expert_service.dart with system prompt for relationships
+- [x] Modify chat_screen.dart to accept Persona parameter and use appropriate service
+- [x] Update main.dart HomePage to navigate Relationship Expert to ChatScreen

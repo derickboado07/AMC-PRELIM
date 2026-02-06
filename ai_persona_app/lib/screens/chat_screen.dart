@@ -3,9 +3,13 @@ import '../models/chat_message.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/input_bar.dart';
 import '../services/financial_advisor_service.dart'; // ← NEW
+import '../services/relationship_expert_service.dart'; // ← NEW
+import '../main.dart'; // For Persona class
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  final Persona persona;
+
+  const ChatScreen({super.key, required this.persona});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -55,10 +59,19 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // 🔥 SEND ENTIRE HISTORY TO GEMINI
-      final aiResponse = await FinancialAdvisorService.sendMultiTurnMessage(
-        messages, // ← Entire conversation!
-      );
+      // 🔥 SEND ENTIRE HISTORY TO GEMINI BASED ON PERSONA
+      String aiResponse;
+      if (widget.persona.name == 'Financial Advisor') {
+        aiResponse = await FinancialAdvisorService.sendMultiTurnMessage(
+          messages,
+        );
+      } else if (widget.persona.name == 'Relationship Expert') {
+        aiResponse = await RelationshipExpertService.sendMultiTurnMessage(
+          messages,
+        );
+      } else {
+        aiResponse = 'This persona is not yet implemented.';
+      }
 
       // Add AI response
       addMessage(aiResponse, "model"); // ← role: "model"
@@ -74,7 +87,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Wealth Wise AI',
+          widget.persona.name == 'Financial Advisor' ? 'Wealth Wise AI' : 'Relationship Advice AI',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         backgroundColor: Colors.blue,

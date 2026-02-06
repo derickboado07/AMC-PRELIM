@@ -108,10 +108,10 @@ class HomePage extends StatelessWidget {
             final persona = personas[index];
             return InkWell(
               onTap: () {
-                if (persona.name == 'Financial Advisor') {
+                if (persona.name == 'Financial Advisor' || persona.name == 'Relationship Expert') {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ChatScreen()),
+                    MaterialPageRoute(builder: (context) => ChatScreen(persona: persona)),
                   );
                 } else {
                   Navigator.push(
