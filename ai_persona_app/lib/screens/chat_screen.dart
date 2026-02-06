@@ -4,6 +4,7 @@ import '../widgets/message_bubble.dart';
 import '../widgets/input_bar.dart';
 import '../services/financial_advisor_service.dart'; // ← NEW
 import '../services/relationship_expert_service.dart'; // ← NEW
+import '../services/wellness_coach_service.dart'; // ← NEW
 import '../main.dart'; // For Persona class
 
 class ChatScreen extends StatefulWidget {
@@ -69,6 +70,10 @@ class _ChatScreenState extends State<ChatScreen> {
         aiResponse = await RelationshipExpertService.sendMultiTurnMessage(
           messages,
         );
+      } else if (widget.persona.name == 'Wellness Coach') {
+        aiResponse = await WellnessCoachService.sendMultiTurnMessage(
+          messages,
+        );
       } else {
         aiResponse = 'This persona is not yet implemented.';
       }
@@ -87,7 +92,11 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.persona.name == 'Financial Advisor' ? 'Wealth Wise AI' : 'Relationship Advice AI',
+          widget.persona.name == 'Financial Advisor'
+              ? 'Wealth Wise AI'
+              : widget.persona.name == 'Relationship Expert'
+                  ? 'Relationship Advice AI'
+                  : 'Wellness Coach AI',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         backgroundColor: Colors.blue,

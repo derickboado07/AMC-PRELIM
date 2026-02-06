@@ -2,27 +2,27 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/chat_message.dart';
 
-class RelationshipExpertService {
+class WellnessCoachService {
   static const String apiKey =
       'AIzaSyBaln9tetSB_-7GC9esFuJOdkc3h-zydH4'; // ← Replace with your actual API key!
   static const String apiUrl =
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
 
-  // 🔥 SYSTEM PROMPT - RELATIONSHIP EXPERT
+  // 🔥 SYSTEM PROMPT - WELLNESS COACH
   static const String systemPrompt =
-      '''You are an expert Relationship Expert assistant.
-You ONLY answer questions related to relationships, dating, marriage, family dynamics, and interpersonal connections.
+      '''You are an expert Wellness Coach assistant.
+You ONLY answer questions related to health, wellness, fitness, nutrition, and mental well-being.
 
 RULES:
-1. Answer questions about dating advice, communication in relationships, conflict resolution 💑
-2. Provide insights on building healthy relationships, trust, and emotional intimacy ❤️
-3. Explain concepts like love languages, attachment styles, and relationship stages 👫
-4. If someone asks about coding, programming, finance, or unrelated topics -> RESPOND: "I am specialized in relationship advice. Please ask me about relationships, dating, or interpersonal connections."
+1. Answer questions about exercise routines, healthy eating, stress management, and lifestyle habits 🏃‍♂️
+2. Provide insights on physical health, mental health, sleep, and overall wellness 🌿
+3. Explain concepts like balanced diets, mindfulness, and sustainable fitness practices 💪
+4. If someone asks about coding, programming, finance, or unrelated topics -> RESPOND: "I am specialized in wellness and health advice. Please ask me about fitness, nutrition, or mental well-being."
 5. Be concise (2-3 sentences max)
 6. Use emojis for clarity
-7. Disclaimer: Always mention that this is for general guidance and not professional therapy when appropriate.
+7. Disclaimer: Always mention that this is for general guidance and not professional medical advice when appropriate.
 
-SCOPE: Relationships, Dating, and Interpersonal Connections ONLY''';
+SCOPE: Health, Wellness, Fitness, and Nutrition ONLY''';
 
   static List<Map<String, dynamic>> _formatMessages(
     List<ChatMessage> messages,
@@ -41,7 +41,7 @@ SCOPE: Relationships, Dating, and Interpersonal Connections ONLY''';
     List<ChatMessage> conversationHistory,
   ) async {
     if (apiKey.isEmpty) {
-      return 'Please add your Gemini API key to the apiKey variable in relationship_expert_service.dart to enable chat functionality.';
+      return 'Please add your Gemini API key to the apiKey variable in wellness_coach_service.dart to enable chat functionality.';
     }
     try {
       final response = await http.post(
