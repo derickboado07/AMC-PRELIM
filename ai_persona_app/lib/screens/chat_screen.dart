@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:async';
+import '../services/chat_service.dart';
+import '../widgets/chat_history_drawer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gap/gap.dart';
 import '../models/chat_message.dart';
 import '../widgets/message_bubble.dart';
@@ -28,6 +33,10 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<ChatMessage> messages = [];
   final ScrollController scrollController = ScrollController();
   bool _isLoading = false;
+  final ChatService _chatService = ChatService();
+  String? _currentConversationId;
+  String? _userId;
+  StreamSubscription<List<Map<String, dynamic>>>? _messagesSub;
 
   // 💡 Suggestion prompts based on persona
   late List<String> _suggestions = _getSuggestions();
@@ -81,8 +90,16 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void dispose() {
+    _messagesSub?.cancel();
     scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final user = FirebaseAuth.instance.currentUser;
+    _userId = user?.uid ?? 'anonymous';
   }
 
   void addMessage(String text, String role) {
@@ -111,10 +128,33 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> handleSend(String text) async {
-    // Add user message
-    addMessage(text, "user");
+    // Persist user message to Firestore (creates conversation if needed)
+    String? convId;
+    try {
+      convId = await _chatService.sendMessage(
+        userId: _userId!,
+        personaId: widget.persona.name,
+        conversationId: _currentConversationId,
+        senderId: _userId!,
+        role: 'user',
+        content: text,
+      );
+    } catch (e) {
+      // If write fails, show a visible error bubble locally
+      setState(() => messages.add(ChatMessage(text: '❌ Failed to send: $e', role: 'model', timestamp: DateTime.now())));
+      return;
+    }
 
-    setState(() => _isLoading = true);
+    // Ensure UI listens to the conversation we just wrote to
+    if (convId != null && convId != _currentConversationId) {
+      setState(() {
+        _currentConversationId = convId;
+        _isLoading = true;
+      });
+      _openConversation(convId);
+    } else {
+      setState(() => _isLoading = true);
+    }
 
     try {
       String aiResponse;
@@ -138,12 +178,46 @@ class _ChatScreenState extends State<ChatScreen> {
         aiResponse = 'This persona is not yet implemented.';
       }
 
-      addMessage(aiResponse, "model");
+      // Persist model response back to Firestore; the subscription will pick it up
+      try {
+        await _chatService.sendMessage(
+          userId: _userId!,
+          personaId: widget.persona.name,
+          conversationId: _currentConversationId,
+          senderId: 'model',
+          role: 'model',
+          content: aiResponse,
+        );
+      } catch (e) {}
     } catch (e) {
-      addMessage('❌ Error: $e', "model");
+      setState(() => messages.add(ChatMessage(text: '❌ Error: $e', role: 'model', timestamp: DateTime.now())));
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _openConversation(String conversationId) {
+    // Cancel previous subscription
+    _messagesSub?.cancel();
+    _currentConversationId = conversationId;
+    messages.clear();
+
+    _messagesSub = _chatService
+        .getMessages(userId: _userId!, personaId: widget.persona.name, conversationId: conversationId)
+        .listen((docs) {
+      setState(() {
+        messages.clear();
+        for (final d in docs) {
+          final content = (d['content'] ?? '') as String;
+          final role = (d['role'] ?? 'user') as String;
+          DateTime ts = DateTime.now();
+          final created = d['created_at'];
+          if (created is Timestamp) ts = created.toDate();
+          messages.add(ChatMessage(text: content, role: role, timestamp: ts));
+        }
+      });
+      scrollToBottom();
+    });
   }
 
   // 📱 Get persona display name
@@ -167,6 +241,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return Scaffold(
       backgroundColor: palette.backgroundColor,
+      drawer: ChatHistoryDrawer(
+        userId: _userId ?? 'anonymous',
+        personaId: widget.persona.name,
+        currentConversationId: _currentConversationId,
+        onConversationSelected: (id) => _openConversation(id),
+        service: _chatService,
+      ),
       // 🎚️ Custom Header instead of AppBar
       body: CustomScrollView(
         slivers: [
@@ -199,6 +280,25 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
             actions: [
+              // Chat history button (opens drawer)
+              Builder(
+                builder: (ctx) => Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: Material(
+                    color: palette.surfaceColor,
+                    shape: const CircleBorder(),
+                    elevation: 4,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => Scaffold.of(ctx).openDrawer(),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Icon(Icons.menu, color: palette.primaryColor),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(right: 12.0),
                 child: Material(
@@ -281,24 +381,26 @@ class _ChatScreenState extends State<ChatScreen> {
             hasScrollBody: true,
             child: Column(
               children: [
-                // 📬 Messages
+                // 📬 Messages (show conversation messages when a conversation is selected)
                 Expanded(
-                  child: messages.isEmpty
+                  child: _currentConversationId == null
                       ? _buildEmptyState()
-                      : ListView.builder(
-                          controller: scrollController,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppTheme.paddingMD,
-                          ),
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            final msg = messages[index];
-                            return MessageBubble(
-                              message: msg,
-                              index: index,
-                            );
-                          },
-                        ),
+                      : (messages.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : ListView.builder(
+                              controller: scrollController,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: AppTheme.paddingMD,
+                              ),
+                              itemCount: messages.length,
+                              itemBuilder: (context, index) {
+                                final msg = messages[index];
+                                return MessageBubble(
+                                  message: msg,
+                                  index: index,
+                                );
+                              },
+                            )),
                 ),
 
                 // ⏳ Loading Indicator
