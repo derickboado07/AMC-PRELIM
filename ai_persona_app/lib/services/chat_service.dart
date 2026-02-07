@@ -65,7 +65,7 @@ class ChatService {
   }) {
     final messagesColl = _conversationsColl(userId, personaId).doc(conversationId).collection('messages').orderBy('created_at');
     return messagesColl.snapshots().map((snap) => snap.docs.map((d) {
-          final data = d.data() as Map<String, dynamic>;
+          final data = d.data();
           return {
             'id': d.id,
             ...data,
@@ -126,7 +126,7 @@ class ChatService {
       final firstLine = content.split('\n').first.trim();
       updatedTitle = firstLine.length <= 40 ? firstLine : '${firstLine.substring(0, 37)}...';
     } else {
-      updatedTitle = existingTitle!;
+      updatedTitle = existingTitle;
     }
 
     batch.set(conversationRef, {

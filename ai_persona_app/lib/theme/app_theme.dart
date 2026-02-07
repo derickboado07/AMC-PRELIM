@@ -345,6 +345,7 @@ class AppPalette {
   late final Color textPrimary;
   late final Color textSecondary;
   late final Color dividerColor;
+  late final Color errorColor;
   late final Color userBubbleColor;
   late final Color aiBubbleColor;
   late final Color userTextColor;
@@ -360,6 +361,7 @@ class AppPalette {
     backgroundColor = theme.scaffoldBackgroundColor;
     surfaceColor = cs.surface;
     dividerColor = theme.dividerColor;
+    errorColor = cs.error;
     textPrimary = theme.textTheme.bodyLarge?.color ?? (bright ? const Color(0xFF1F2937) : Colors.white);
     textSecondary = theme.textTheme.bodySmall?.color ?? (bright ? const Color(0xFF6B7280) : const Color(0xFF9AA0A6));
     userBubbleColor = cs.primary;

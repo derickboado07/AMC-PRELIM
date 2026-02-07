@@ -146,7 +146,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     // Ensure UI listens to the conversation we just wrote to
-    if (convId != null && convId != _currentConversationId) {
+    if (convId != _currentConversationId) {
       setState(() {
         _currentConversationId = convId;
         _isLoading = true;
@@ -259,58 +259,88 @@ class _ChatScreenState extends State<ChatScreen> {
             pinned: true,
             toolbarHeight: 96,
             titleSpacing: 0,
-            // Styled circular back button to improve visibility
+            // 📱 Styled back button - Modern Design
             leading: Padding(
-              padding: const EdgeInsets.only(left: 12.0),
+              padding: const EdgeInsets.only(left: AppTheme.paddingMD),
               child: Material(
-                color: palette.surfaceColor,
-                shape: const CircleBorder(),
-                elevation: 6,
+                color: Colors.transparent,
                 child: InkWell(
-                  customBorder: const CircleBorder(),
                   onTap: () => Navigator.pop(context),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  borderRadius: BorderRadius.circular(50),
+                  child: Container(
+                    padding: const EdgeInsets.all(AppTheme.paddingMD),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: palette.errorColor.withOpacity(0.1),
+                      border: Border.all(
+                        color: palette.errorColor.withOpacity(0.2),
+                        width: 1.5,
+                      ),
+                    ),
                     child: Icon(
-                      Icons.arrow_back,
-                      color: palette.primaryColor,
+                      Icons.arrow_back_rounded,
+                      color: palette.errorColor,
+                      size: 24,
                     ),
                   ),
                 ),
               ),
             ),
             actions: [
-              // Chat history button (opens drawer)
+              // 💬 Chat history button (opens drawer) - Modern Design
               Builder(
                 builder: (ctx) => Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: const EdgeInsets.only(right: AppTheme.paddingMD),
                   child: Material(
-                    color: palette.surfaceColor,
-                    shape: const CircleBorder(),
-                    elevation: 4,
+                    color: Colors.transparent,
                     child: InkWell(
-                      customBorder: const CircleBorder(),
                       onTap: () => Scaffold.of(ctx).openDrawer(),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(Icons.menu, color: palette.primaryColor),
+                      borderRadius: BorderRadius.circular(50),
+                      child: Container(
+                        padding: const EdgeInsets.all(AppTheme.paddingMD),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: palette.primaryColor.withOpacity(0.1),
+                          border: Border.all(
+                            color: palette.primaryColor.withOpacity(0.2),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Icon(
+                          Icons.menu_rounded,
+                          color: palette.primaryColor,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
+              // 🌟 Theme toggle button - Modern Design
               Padding(
-                padding: const EdgeInsets.only(right: 12.0),
+                padding: const EdgeInsets.only(right: AppTheme.paddingLG),
                 child: Material(
-                  color: palette.surfaceColor,
-                  shape: const CircleBorder(),
-                  elevation: 4,
+                  color: Colors.transparent,
                   child: InkWell(
-                    customBorder: const CircleBorder(),
                     onTap: widget.toggleTheme,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Icon(Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode, color: palette.primaryColor),
+                    borderRadius: BorderRadius.circular(50),
+                    child: Container(
+                      padding: const EdgeInsets.all(AppTheme.paddingMD),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: palette.accentColor.withOpacity(0.1),
+                        border: Border.all(
+                          color: palette.accentColor.withOpacity(0.2),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Icons.light_mode_rounded
+                            : Icons.dark_mode_rounded,
+                        color: palette.accentColor,
+                        size: 24,
+                      ),
                     ),
                   ),
                 ),

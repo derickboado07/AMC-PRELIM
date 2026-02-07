@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  ThemeData _getDarkTheme() {
+  ThemeData get _darkTheme {
     return ThemeData(
       brightness: Brightness.dark,
       primaryColor: AppTheme.primaryDark,
