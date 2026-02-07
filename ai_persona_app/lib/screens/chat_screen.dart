@@ -11,8 +11,10 @@ import '../main.dart'; // For Persona class
 
 class ChatScreen extends StatefulWidget {
   final Persona persona;
+  final VoidCallback toggleTheme;
+  final bool isDarkMode;
 
-  const ChatScreen({super.key, required this.persona});
+  const ChatScreen({super.key, required this.persona, required this.toggleTheme, required this.isDarkMode});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -112,6 +114,12 @@ class _ChatScreenState extends State<ChatScreen> {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: widget.toggleTheme,
+          ),
+        ],
       ),
       body: Column(
         children: [

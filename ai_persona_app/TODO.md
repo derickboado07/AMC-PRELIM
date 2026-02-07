@@ -1,3 +1,6 @@
-- [x] Create relationship_expert_service.dart with system prompt for relationships
-- [x] Modify chat_screen.dart to accept Persona parameter and use appropriate service
-- [x] Update main.dart HomePage to navigate Relationship Expert to ChatScreen
+- [x] Define light and dark themes in main.dart
+- [x] Make MyApp stateful with theme toggle logic
+- [x] Update HomePage to accept toggleTheme callback and isDarkMode bool, add toggle button in app bar
+- [x] Update ChatScreen to accept toggleTheme callback and isDarkMode bool, add toggle button in app bar
+- [x] Update navigation in HomePage to pass toggleTheme and isDarkMode to ChatScreen
+- [x] Test the theme toggle functionality

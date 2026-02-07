@@ -6,38 +6,88 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkMode = false;
+
+  void _toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
+  ThemeData _getLightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      primaryColor: Colors.blue,
+      primaryColorLight: Colors.blue[200],
+      scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+      cardColor: Colors.white,
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        elevation: 2.0,
+      ),
+      textTheme: GoogleFonts.interTextTheme().copyWith(
+        headlineSmall: GoogleFonts.poppins(
+          fontSize: 20.0,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          fontSize: 16.0,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.25,
+        ),
+      ),
+    );
+  }
+
+  ThemeData _getDarkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: Colors.blue,
+      primaryColorLight: Colors.blue[300],
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      cardColor: const Color(0xFF1E1E1E),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Color(0xFF1E1E1E),
+        foregroundColor: Colors.white,
+        elevation: 2.0,
+      ),
+      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
+        headlineSmall: GoogleFonts.poppins(
+          fontSize: 20.0,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.5,
+        ),
+        bodyMedium: GoogleFonts.inter(
+          fontSize: 16.0,
+          fontWeight: FontWeight.w500,
+          letterSpacing: 0.25,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AI Persona App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Colors.blue,
-        primaryColorLight: Colors.blue[200],
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-        cardColor: Colors.white,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          elevation: 2.0,
-        ),
-        textTheme: GoogleFonts.interTextTheme().copyWith(
-          headlineSmall: GoogleFonts.poppins(
-            fontSize: 20.0,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-          ),
-          bodyMedium: GoogleFonts.inter(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w500,
-            letterSpacing: 0.25,
-          ),
-        ),
+      theme: _getLightTheme(),
+      darkTheme: _getDarkTheme(),
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: HomePage(
+        toggleTheme: _toggleTheme,
+        isDarkMode: _isDarkMode,
       ),
-      home: const HomePage(),
     );
   }
 }
@@ -55,7 +105,10 @@ class Persona {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final VoidCallback toggleTheme;
+  final bool isDarkMode;
+
+  const HomePage({super.key, required this.toggleTheme, required this.isDarkMode});
 
   static const List<Persona> personas = [
     Persona(
@@ -93,6 +146,12 @@ class HomePage extends StatelessWidget {
           'Select Your AI Persona',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
+        actions: [
+          IconButton(
+            icon: Icon(isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            onPressed: toggleTheme,
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -116,7 +175,11 @@ class HomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ChatScreen(persona: persona),
+                      builder: (context) => ChatScreen(
+                        persona: persona,
+                        toggleTheme: toggleTheme,
+                        isDarkMode: isDarkMode,
+                      ),
                     ),
                   );
                 } else {
