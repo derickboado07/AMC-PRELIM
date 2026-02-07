@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:gap/gap.dart';
 import '../models/chat_message.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/input_bar.dart';
+import '../widgets/suggestion_chip.dart';
 import '../services/financial_advisor_service.dart';
 import '../services/psychiatrist_service.dart';
 import '../services/relationship_expert_service.dart';
 import '../services/wellness_coach_service.dart';
 import '../services/bible_commentary_service.dart';
 import '../main.dart'; // For Persona class
+import '../theme/app_theme.dart';
 
 class ChatScreen extends StatefulWidget {
   final Persona persona;
@@ -25,6 +29,56 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController scrollController = ScrollController();
   bool _isLoading = false;
 
+  // 💡 Suggestion prompts based on persona
+  late List<String> _suggestions = _getSuggestions();
+
+  List<String> _getSuggestions() {
+    switch (widget.persona.name) {
+      case 'Financial Advisor':
+        return [
+          'How should I start investing?',
+          'Help me create a budget plan',
+          'What\'s the best savings strategy?',
+          'Explain passive income for me',
+        ];
+      case 'Wellness Coach':
+        return [
+          'Design a workout routine for me',
+          'What\'s a good nutrition plan?',
+          'Help me create healthy habits',
+          'Suggest a stress management routine',
+        ];
+      case 'Psychiatrist':
+        return [
+          'I need help managing anxiety',
+          'How do I improve my sleep?',
+          'Can we discuss my stress levels?',
+          'Tips for better mental health',
+        ];
+      case 'Relationship Expert':
+        return [
+          'How to improve communication?',
+          'Tips for resolving conflicts',
+          'How to build trust in relationships?',
+          'Advice for long-distance relationships',
+        ];
+      case 'McArthur Bible Commentary':
+        return [
+          'Explain this Bible verse to me',
+          'What\'s the historical context here?',
+          'Help me understand this passage',
+          'What\'s the theological meaning?',
+        ];
+      default:
+        return [
+          'Can you help me with this?',
+          'Tell me more about this',
+          'What\'s your perspective?',
+          'Give me some advice',
+        ];
+    }
+  }
+
   @override
   void dispose() {
     scrollController.dispose();
@@ -36,7 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
       messages.add(
         ChatMessage(
           text: text,
-          role: role, // "user" or "model"
+          role: role,
           timestamp: DateTime.now(),
         ),
       );
@@ -56,7 +110,6 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  // 🔥 MULTI-TURN HANDLER
   Future<void> handleSend(String text) async {
     // Add user message
     addMessage(text, "user");
@@ -64,7 +117,6 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() => _isLoading = true);
 
     try {
-      // 🔥 SEND ENTIRE HISTORY TO GEMINI BASED ON PERSONA
       String aiResponse;
       if (widget.persona.name == 'Financial Advisor') {
         aiResponse = await FinancialAdvisorService.sendMultiTurnMessage(
@@ -86,8 +138,7 @@ class _ChatScreenState extends State<ChatScreen> {
         aiResponse = 'This persona is not yet implemented.';
       }
 
-      // Add AI response
-      addMessage(aiResponse, "model"); // ← role: "model"
+      addMessage(aiResponse, "model");
     } catch (e) {
       addMessage('❌ Error: $e', "model");
     } finally {
@@ -95,78 +146,271 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // 📱 Get persona display name
+  String get _personaDisplayName {
+    return widget.persona.name == 'Financial Advisor'
+        ? 'Wealth Wise AI'
+        : widget.persona.name == 'Relationship Expert'
+            ? 'Relationship Advisor'
+            : widget.persona.name == 'Wellness Coach'
+                ? 'Wellness Coach'
+                : widget.persona.name == 'Psychiatrist'
+                    ? 'Mental Health AI'
+                    : widget.persona.name == 'McArthur Bible Commentary'
+                        ? 'Bible Commentary'
+                        : widget.persona.name;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final palette = AppTheme.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          widget.persona.name == 'Financial Advisor'
-              ? 'Wealth Wise AI'
-              : widget.persona.name == 'Relationship Expert'
-              ? 'Relationship Advice AI'
-              : widget.persona.name == 'Wellness Coach'
-              ? 'Wellness Coach AI'
-              : widget.persona.name == 'Psychiatrist'
-              ? 'Mental Health AI'
-              : widget.persona.name == 'McArthur Bible Commentary'
-              ? 'McArthur Bible Commentary'
-              : widget.persona.name,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
-        backgroundColor: Colors.blue,
-        actions: [
-          IconButton(
-            icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode),
-            onPressed: widget.toggleTheme,
+      backgroundColor: palette.backgroundColor,
+      // 🎚️ Custom Header instead of AppBar
+      body: CustomScrollView(
+        slivers: [
+          // 📌 Modern Header (fixed-size title so it doesn't scale on scroll)
+          SliverAppBar(
+            backgroundColor: palette.surfaceColor,
+            foregroundColor: palette.textPrimary,
+            elevation: 0,
+            pinned: true,
+            toolbarHeight: 96,
+            titleSpacing: 0,
+            // Styled circular back button to improve visibility
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 12.0),
+              child: Material(
+                color: palette.surfaceColor,
+                shape: const CircleBorder(),
+                elevation: 6,
+                child: InkWell(
+                  customBorder: const CircleBorder(),
+                  onTap: () => Navigator.pop(context),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: palette.primaryColor,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Material(
+                  color: palette.surfaceColor,
+                  shape: const CircleBorder(),
+                  elevation: 4,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: widget.toggleTheme,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: palette.primaryColor),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+            // Fixed title row (will not scale when the appbar collapses)
+            title: Row(
+              children: [
+                const SizedBox(width: 8),
+                // small avatar kept in the toolbar so layout remains stable
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: palette.primaryGradient,
+                    boxShadow: palette.cardShadow,
+                  ),
+                  child: Icon(
+                    widget.persona.icon,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                ),
+                const Gap(12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        _personaDisplayName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          color: palette.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Online • Always ready to help',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.lato(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: palette.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(1),
+              child: Container(
+                height: 1,
+                color: palette.dividerColor,
+              ),
+            ),
           ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Messages
-          Expanded(
-            child: messages.isEmpty
-                ? const Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+
+          // 💬 Messages List or Empty State
+          SliverFillRemaining(
+            hasScrollBody: true,
+            child: Column(
+              children: [
+                // 📬 Messages
+                Expanded(
+                  child: messages.isEmpty
+                      ? _buildEmptyState()
+                      : ListView.builder(
+                          controller: scrollController,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: AppTheme.paddingMD,
+                          ),
+                          itemCount: messages.length,
+                          itemBuilder: (context, index) {
+                            final msg = messages[index];
+                            return MessageBubble(
+                              message: msg,
+                              index: index,
+                            );
+                          },
+                        ),
+                ),
+
+                // ⏳ Loading Indicator
+                if (_isLoading)
+                  Padding(
+                    padding: const EdgeInsets.all(AppTheme.paddingLG),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Icon(Icons.chat, size: 100, color: Colors.grey),
-                        SizedBox(height: 16),
-                        Text('Start chatting!'),
+                        const SizedBox(width: AppTheme.paddingMD),
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              palette.primaryColor,
+                            ),
+                          ),
+                        ),
+                        const Gap(12),
                         Text(
-                          'Multi-turn means Gemini remembers context 🧠',
-                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                          'Thinking with context...',
+                          style: GoogleFonts.lato(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: palette.textSecondary,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                       ],
                     ),
-                  )
-                : ListView.builder(
-                    controller: scrollController,
-                    itemCount: messages.length,
-                    itemBuilder: (context, index) {
-                      final msg = messages[index];
-                      return MessageBubble(message: msg);
-                    },
                   ),
-          ),
-
-          // Loading
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(width: 12),
-                  Text('🤖 Thinking with context...'),
-                ],
-              ),
+              ],
             ),
-
-          // Input
-          InputBar(onSendMessage: handleSend),
+          ),
         ],
       ),
+
+      // 📤 Floating Input Bar at Bottom (use bottomNavigationBar so content isn't covered)
+      bottomNavigationBar: SafeArea(
+        child: InputBar(onSendMessage: handleSend),
+      ),
+    );
+  }
+
+  /// 🎯 Empty State with Suggestion Chips
+  Widget _buildEmptyState() {
+    final palette = AppTheme.of(context);
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // 🎨 Illustration/Icon
+        Container(
+          width: 120,
+          height: 120,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: palette.primaryGradient,
+            boxShadow: palette.cardShadow,
+          ),
+          child: Icon(
+            widget.persona.icon,
+            size: 64,
+            color: Colors.white,
+          ),
+        ),
+        const Gap(24),
+        // 📝 Greeting Title
+        Text(
+          'Start the Conversation',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
+            color: palette.textPrimary,
+          ),
+        ),
+        const Gap(8),
+        // 📄 Subtitle
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppTheme.paddingXL),
+          child: Text(
+            'Ask me anything and I\'ll help you with your question',
+            textAlign: TextAlign.center,
+            style: GoogleFonts.lato(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: palette.textSecondary,
+              height: 1.5,
+            ),
+          ),
+        ),
+        const Gap(32),
+        // 💡 Suggestion Chips
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppTheme.paddingLG),
+          child: Wrap(
+            spacing: AppTheme.paddingMD,
+            runSpacing: AppTheme.paddingMD,
+            alignment: WrapAlignment.center,
+            children: List.generate(
+              _suggestions.length,
+              (index) => SuggestionChip(
+                label: _suggestions[index],
+                onTap: () => handleSend(_suggestions[index]),
+                index: index,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
