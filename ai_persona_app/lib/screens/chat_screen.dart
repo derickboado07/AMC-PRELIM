@@ -210,7 +210,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onTap: widget.toggleTheme,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: palette.primaryColor),
+                      child: Icon(Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode, color: palette.primaryColor),
                     ),
                   ),
                 ),
