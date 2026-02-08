@@ -87,6 +87,7 @@ class _PersonaCardState extends State<PersonaCard> {
                   // 📌 Content
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       // 🎯 Icon with Hero Animation
                       Hero(
@@ -94,6 +95,7 @@ class _PersonaCardState extends State<PersonaCard> {
                         child: Container(
                           width: 80,
                           height: 80,
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             gradient: LinearGradient(
@@ -112,49 +114,57 @@ class _PersonaCardState extends State<PersonaCard> {
                               ),
                             ],
                           ),
-                          child: Icon(
-                            widget.icon,
-                            size: 42,
-                            color: palette.primaryColor,
+                          child: Center(
+                            child: Icon(
+                              widget.icon,
+                              size: 40,
+                              color: palette.primaryColor,
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: AppTheme.paddingLG),
                       // 📝 Title
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppTheme.paddingMD,
-                        ),
-                        child: Text(
-                          widget.name,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: palette.textPrimary,
-                            letterSpacing: -0.3,
+                      SizedBox(
+                        width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.paddingMD,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          child: Text(
+                            widget.name,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: palette.textPrimary,
+                              letterSpacing: -0.3,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                       const SizedBox(height: AppTheme.paddingSM),
                       // 📌 Subtitle
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppTheme.paddingMD,
-                        ),
-                        child: Text(
-                          widget.subtitle,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.lato(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w400,
-                            color: palette.textSecondary,
-                            height: 1.4,
+                      SizedBox(
+                        width: double.infinity,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.paddingMD,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                          child: Text(
+                            widget.subtitle,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.lato(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                              color: palette.textSecondary,
+                              height: 1.4,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ],
